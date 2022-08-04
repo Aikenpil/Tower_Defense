@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Inimigo : MonoBehaviour
 {
-    // Start is called before the first frame update
+
+    [SerializeField] private int vida;
+
     void Start()
     {
         UnityEngine.AI.NavMeshAgent agente = GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -13,9 +15,17 @@ public class Inimigo : MonoBehaviour
         agente.SetDestination(posicaoDoFimDoCaminho);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public void RecebeDano(int pontosDeDano)
+    {
+        vida -= pontosDeDano;
+        if (vida <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
