@@ -7,29 +7,48 @@ public class Torre : MonoBehaviour
 
     private float momentoDoUltimoDisparo;
     public float tempoDeRecarga = 1f;
-    public GameObject prefabDoMissil;
+    [SerializeField] private float raioDeAlcance = 200f;
+    [SerializeField] GameObject prefabDoMissil;
     private GameObject alvo;
-
-    private void Start()
-    {
-        alvo = GameObject.Find("Inimigo");
-    }
 
     private void Update()
     {
-        if (alvo != null) Atira();
+        Inimigo alvo = EscolheAlvo();
+		if (alvo){
+			Atira(alvo);
+		}
     }
 
-    private void Atira()
+    private void Atira(Inimigo inimigo)
     {
         float tempoAtual = Time.time;
-        if (tempoAtual > momentoDoUltimoDisparo + tempoDeRecarga)
-        {
-            momentoDoUltimoDisparo = tempoAtual;
-            GameObject pontoDeDisparo = GameObject.Find("Canhao/PontoDeDisparo");
-            Vector3 posicaoDoPontoDeDisparo = pontoDeDisparo.transform.position;
-            Instantiate(prefabDoMissil, posicaoDoPontoDeDisparo, transform.rotation);
-        }
+		Transform pontodedisparo = this.transform.Find("Canhao/PontoDeDisparo");
+		Vector3 posicao = pontodedisparo.transform.position;
 
+		if (tempoAtual > momentoDoUltimoDisparo + tempoDeRecarga) {
+			momentoDoUltimoDisparo = tempoAtual;
+			GameObject missilObject = (GameObject) Instantiate (prefabDoMissil, posicao, transform.rotation);
+			Missil missil = missilObject.GetComponent<Missil>();
+			missil.DefineAlvo(inimigo);
+		}
     }
+
+    private Inimigo EscolheAlvo(){
+		GameObject[] inimigos = GameObject.FindGameObjectsWithTag("inimigo");
+		foreach (GameObject inimigo in inimigos) {
+			if (EstaNoRaioDeAlcance(inimigo)){
+				return inimigo.GetComponent<Inimigo>();
+			}
+		}
+		return null;
+	}
+
+    private bool EstaNoRaioDeAlcance(GameObject inimigo){
+
+		Vector3 posicaoInimigo = Vector3.ProjectOnPlane (inimigo.transform.position, Vector3.up);
+		Vector3 posicaoTorre = Vector3.ProjectOnPlane (this.transform.position, Vector3.up);
+		float distancia = Vector3.Distance (posicaoTorre, posicaoInimigo);
+
+		return distancia <= raioDeAlcance;
+	}
 }

@@ -6,14 +6,8 @@ public class Missil : MonoBehaviour
 {
 
     private float velocidade = 100f;
-    private GameObject alvo;
+    private Inimigo alvo;
     [SerializeField] private int pontosDeDano;
-
-
-    private void Start()
-    {
-        alvo = GameObject.Find("Inimigo");
-    }
     
     void Update()
     {
@@ -52,4 +46,7 @@ public class Missil : MonoBehaviour
         }
 
     }
+    public void DefineAlvo(Inimigo inimigo){
+		alvo = inimigo;
+	}
 }
